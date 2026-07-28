@@ -1,0 +1,259 @@
+/*==========================================================
+ Project : Car Wash Management System (CWMS)
+ Course  : Oracle Database Programming Capstone
+ Student : MASSAQUOI WILLIAMS
+ Reg No. : 30489/2025
+ File    : 06_SQL_Queries.sql
+==========================================================*/
+
+-- ======================================================
+-- BASIC SELECT QUERIES
+-- ======================================================
+
+-- 1. Display all customers
+SELECT * FROM customer;
+
+-- 2. Display all employees
+SELECT * FROM employee;
+
+-- 3. Display all services
+SELECT * FROM service;
+
+-- 4. Display all vehicles
+SELECT * FROM vehicle;
+
+-- ======================================================
+-- WHERE CLAUSE
+-- ======================================================
+
+-- 5. Customers from Kigali
+SELECT * FROM customer
+WHERE address = 'Kigali';
+
+-- 6. Services costing more than 15
+SELECT * FROM service
+WHERE price > 15;
+
+-- 7. Completed orders
+SELECT * FROM service_order
+WHERE status = 'COMPLETED';
+
+-- ======================================================
+-- ORDER BY
+-- ======================================================
+
+-- 8. Customers ordered by last name
+SELECT * FROM customer
+ORDER BY last_name;
+
+-- 9. Services ordered by price (highest first)
+SELECT * FROM service
+ORDER BY price DESC;
+
+-- ======================================================
+-- AGGREGATE FUNCTIONS
+-- ======================================================
+
+-- 10. Total customers
+SELECT COUNT(*) AS total_customers
+FROM customer;
+
+-- 11. Average service price
+SELECT AVG(price) AS average_price
+FROM service;
+
+-- 12. Most expensive service
+SELECT MAX(price) AS highest_price
+FROM service;
+
+-- 13. Cheapest service
+SELECT MIN(price) AS lowest_price
+FROM service;
+
+-- 14. Total payments received
+SELECT SUM(amount) AS total_revenue
+FROM payment;
+
+-- ======================================================
+-- GROUP BY
+-- ======================================================
+
+-- 15. Number of orders by status
+SELECT status,
+       COUNT(*) AS total_orders
+FROM service_order
+GROUP BY status;
+
+-- 16. Total payments by payment method
+SELECT payment_method,
+       SUM(amount) AS total_amount
+FROM payment
+GROUP BY payment_method;
+
+-- ======================================================
+-- INNER JOIN
+-- ======================================================
+
+-- 17. Customers and their vehicles
+SELECT
+    c.first_name,
+    c.last_name,
+    v.plate_number,
+    v.vehicle_model
+FROM customer c
+JOIN vehicle v
+ON c.customer_id = v.customer_id;
+
+-- 18. Orders with customer names
+SELECT
+    so.order_id,
+    c.first_name,
+    c.last_name,
+    so.status
+FROM service_order so
+JOIN customer c
+ON so.customer_id = c.customer_id;
+
+-- 19. Orders with employee names
+SELECT
+    so.order_id,
+    e.first_name,
+    e.last_name
+FROM service_order so
+JOIN employee e
+ON so.employee_id = e.employee_id;
+
+-- ======================================================
+-- MULTIPLE TABLE JOIN
+-- ======================================================
+
+-- 20. Complete order report
+SELECT
+    so.order_id,
+    c.first_name || ' ' || c.last_name AS customer,
+    v.plate_number,
+    e.first_name || ' ' || e.last_name AS employee,
+    so.status
+FROM service_order so
+JOIN customer c
+ON so.customer_id = c.customer_id
+JOIN vehicle v
+ON so.vehicle_id = v.vehicle_id
+JOIN employee e
+ON so.employee_id = e.employee_id;
+
+-- ======================================================
+-- LEFT JOIN
+-- ======================================================
+
+-- 21. Employees and their assigned orders
+SELECT
+    e.first_name,
+    e.last_name,
+    so.order_id
+FROM employee e
+LEFT JOIN service_order so
+ON e.employee_id = so.employee_id;
+
+-- ======================================================
+-- HAVING
+-- ======================================================
+
+-- 22. Employees handling more than one order
+SELECT
+    employee_id,
+    COUNT(*) AS total_orders
+FROM service_order
+GROUP BY employee_id
+HAVING COUNT(*) > 1;
+
+-- ======================================================
+-- SUBQUERIES
+-- ======================================================
+
+-- 23. Services above average price
+SELECT *
+FROM service
+WHERE price >
+(
+    SELECT AVG(price)
+    FROM service
+);
+
+-- 24. Customer with the smallest customer ID
+SELECT *
+FROM customer
+WHERE customer_id =
+(
+    SELECT MIN(customer_id)
+    FROM customer
+);
+
+-- ======================================================
+-- EXISTS
+-- ======================================================
+
+-- 25. Customers who own vehicles
+SELECT *
+FROM customer c
+WHERE EXISTS
+(
+    SELECT 1
+    FROM vehicle v
+    WHERE v.customer_id = c.customer_id
+);
+
+-- ======================================================
+-- IN
+-- ======================================================
+
+-- 26. Orders for customers in Kigali
+SELECT *
+FROM service_order
+WHERE customer_id IN
+(
+    SELECT customer_id
+    FROM customer
+    WHERE address = 'Kigali'
+);
+
+-- ======================================================
+-- WINDOW FUNCTIONS
+-- ======================================================
+
+-- 27. Rank services by price
+SELECT
+    service_name,
+    price,
+    RANK() OVER (ORDER BY price DESC) AS service_rank
+FROM service;
+
+-- 28. Dense rank services
+SELECT
+    service_name,
+    price,
+    DENSE_RANK() OVER (ORDER BY price DESC) AS dense_rank
+FROM service;
+
+-- 29. Row number for customers
+SELECT
+    customer_id,
+    first_name,
+    ROW_NUMBER() OVER (ORDER BY customer_id) AS row_num
+FROM customer;
+
+-- ======================================================
+-- VIEW QUERIES
+-- ======================================================
+
+-- 30. Customer Vehicles View
+SELECT * FROM vw_customer_vehicles;
+
+-- 31. Order Summary View
+SELECT * FROM vw_order_summary;
+
+-- 32. Daily Revenue View
+SELECT * FROM vw_daily_revenue;
+
+-- 33. Employee Performance View
+SELECT * FROM vw_employee_performance;
