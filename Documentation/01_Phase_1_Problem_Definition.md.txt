@@ -1,0 +1,82 @@
+# Phase 1 – Problem Definition
+
+## Project Title
+
+Car Wash Management System (CWMS)
+
+## Introduction
+
+The Car Wash Management System (CWMS) is designed to automate the daily operations of a car wash business. It replaces manual record-keeping with a centralized Oracle database that improves efficiency, accuracy, and accountability.
+
+## Background
+
+Many small and medium-sized car wash businesses still rely on paper records or spreadsheets. These methods often result in lost customer records, inaccurate billing, duplicate entries, and poor reporting. CWMS addresses these issues through a secure Oracle database system.
+
+## Problem Statement
+
+Manual management of customers, vehicles, services, and payments leads to inefficiencies, data inconsistency, and limited reporting capabilities. There is also no reliable audit trail for tracking database changes.
+
+## General Objective
+
+To develop an Oracle-based Car Wash Management System that automates business operations and improves data management.
+
+## Specific Objectives
+
+- Register customers and vehicles
+- Manage available services
+- Process service orders
+- Record payments
+- Generate reports
+- Implement audit logging
+- Enforce business rules using PL/SQL
+
+## Scope
+
+### In Scope
+
+- Customer Management
+- Vehicle Management
+- Employee Management
+- Service Management
+- Service Orders
+- Payments
+- Reporting
+- Audit Logs
+
+### Out of Scope
+
+- Online booking
+- Mobile application
+- Payroll
+- Inventory management
+
+## Functional Requirements
+
+- Customer registration
+- Vehicle registration
+- Employee management
+- Service management
+- Order processing
+- Payment processing
+- Report generation
+- Audit logging
+
+## Non-Functional Requirements
+
+- Security
+- Reliability
+- Scalability
+- Performance
+- Data Integrity
+
+## Expected Deliverables
+
+- Oracle Database
+- SQL Scripts
+- PL/SQL Programs
+- Triggers
+- ER Diagram
+- BPMN Diagram
+- Use Case Diagram
+- Documentation
+- GitHub Repository
