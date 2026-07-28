@@ -1,0 +1,105 @@
+/*==========================================================
+ Project : Car Wash Management System (CWMS)
+ Course  : Oracle Database Programming Capstone
+ Student : MASSAQUOI WILLIAMS
+ Reg No. : 30489/2025
+ File    : 02_Create_Sequences.sql
+==========================================================*/
+
+-- ======================================================
+-- CUSTOMER SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_customer
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- VEHICLE SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_vehicle
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- EMPLOYEE SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_employee
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- SERVICE SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_service
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- SERVICE ORDER SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_service_order
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- ORDER DETAIL SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_order_detail
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- PAYMENT SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_payment
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- PUBLIC HOLIDAY SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_public_holiday
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- AUDIT LOG SEQUENCE
+-- ======================================================
+
+CREATE SEQUENCE seq_audit_log
+START WITH 1
+INCREMENT BY 1
+NOCACHE
+NOCYCLE;
+
+-- ======================================================
+-- VERIFY ALL SEQUENCES
+-- ======================================================
+
+SELECT sequence_name
+FROM user_sequences
+ORDER BY sequence_name;
