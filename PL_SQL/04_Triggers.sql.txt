@@ -1,0 +1,214 @@
+/*==========================================================
+ Project : Car Wash Management System (CWMS)
+ Course  : Oracle Database Programming Capstone
+ Student : MASSAQUOI WILLIAMS
+ Reg No. : 30489/2025
+ File    : 04_Triggers.sql
+==========================================================*/
+
+-- ======================================================
+-- TRIGGER 1: CUSTOMER AUDIT
+-- ======================================================
+
+CREATE OR REPLACE TRIGGER trg_customer_audit
+AFTER INSERT OR UPDATE OR DELETE
+ON customer
+FOR EACH ROW
+BEGIN
+
+    IF INSERTING THEN
+        INSERT INTO audit_log(
+            audit_id,
+            table_name,
+            operation,
+            old_value,
+            new_value,
+            changed_by,
+            change_date
+        )
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'CUSTOMER',
+            'INSERT',
+            NULL,
+            'Customer ID: ' || :NEW.customer_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF UPDATING THEN
+        INSERT INTO audit_log(
+            audit_id,
+            table_name,
+            operation,
+            old_value,
+            new_value,
+            changed_by,
+            change_date
+        )
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'CUSTOMER',
+            'UPDATE',
+            'Customer ID: ' || :OLD.customer_id,
+            'Customer ID: ' || :NEW.customer_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF DELETING THEN
+        INSERT INTO audit_log(
+            audit_id,
+            table_name,
+            operation,
+            old_value,
+            new_value,
+            changed_by,
+            change_date
+        )
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'CUSTOMER',
+            'DELETE',
+            'Customer ID: ' || :OLD.customer_id,
+            NULL,
+            USER,
+            SYSDATE
+        );
+    END IF;
+
+END;
+/
+
+-- ======================================================
+-- TRIGGER 2: SERVICE ORDER AUDIT
+-- ======================================================
+
+CREATE OR REPLACE TRIGGER trg_order_audit
+AFTER INSERT OR UPDATE OR DELETE
+ON service_order
+FOR EACH ROW
+BEGIN
+
+    IF INSERTING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'SERVICE_ORDER',
+            'INSERT',
+            NULL,
+            'Order ID: ' || :NEW.order_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF UPDATING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'SERVICE_ORDER',
+            'UPDATE',
+            'Order ID: ' || :OLD.order_id,
+            'Order ID: ' || :NEW.order_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF DELETING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'SERVICE_ORDER',
+            'DELETE',
+            'Order ID: ' || :OLD.order_id,
+            NULL,
+            USER,
+            SYSDATE
+        );
+
+    END IF;
+
+END;
+/
+
+-- ======================================================
+-- TRIGGER 3: PAYMENT AUDIT
+-- ======================================================
+
+CREATE OR REPLACE TRIGGER trg_payment_audit
+AFTER INSERT OR UPDATE OR DELETE
+ON payment
+FOR EACH ROW
+BEGIN
+
+    IF INSERTING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'PAYMENT',
+            'INSERT',
+            NULL,
+            'Payment ID: ' || :NEW.payment_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF UPDATING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'PAYMENT',
+            'UPDATE',
+            'Payment ID: ' || :OLD.payment_id,
+            'Payment ID: ' || :NEW.payment_id,
+            USER,
+            SYSDATE
+        );
+
+    ELSIF DELETING THEN
+        INSERT INTO audit_log
+        VALUES(
+            seq_audit_log.NEXTVAL,
+            'PAYMENT',
+            'DELETE',
+            'Payment ID: ' || :OLD.payment_id,
+            NULL,
+            USER,
+            SYSDATE
+        );
+
+    END IF;
+
+END;
+/
+
+-- ======================================================
+-- TEST TRIGGERS
+-- ======================================================
+
+-- Insert a customer
+INSERT INTO customer
+VALUES(
+    seq_customer.NEXTVAL,
+    'Test',
+    'User',
+    '0788777777',
+    'test@example.com',
+    'Kigali'
+);
+
+-- Update the customer
+UPDATE customer
+SET address = 'Huye'
+WHERE phone = '0788777777';
+
+-- Delete the customer
+DELETE FROM customer
+WHERE phone = '0788777777';
+
+COMMIT;
+
+-- View audit records
+SELECT *
+FROM audit_log
+ORDER BY audit_id;
