@@ -1,0 +1,179 @@
+/*==========================================================
+ Project : Car Wash Management System (CWMS)
+ Course  : Oracle Database Programming Capstone
+ Student : MASSAQUOI WILLIAMS
+ Reg No. : 30489/2025
+ File    : 03_Packages.sql
+==========================================================*/
+
+-- ======================================================
+-- PACKAGE SPECIFICATION
+-- ======================================================
+
+CREATE OR REPLACE PACKAGE pkg_carwash AS
+
+    -- Procedures
+    PROCEDURE add_customer(
+        p_first_name IN VARCHAR2,
+        p_last_name  IN VARCHAR2,
+        p_phone      IN VARCHAR2,
+        p_email      IN VARCHAR2,
+        p_address    IN VARCHAR2
+    );
+
+    PROCEDURE update_order_status(
+        p_order_id IN NUMBER,
+        p_status   IN VARCHAR2
+    );
+
+    -- Functions
+    FUNCTION calculate_order_total(
+        p_order_id IN NUMBER
+    ) RETURN NUMBER;
+
+    FUNCTION customer_vehicle_count(
+        p_customer_id IN NUMBER
+    ) RETURN NUMBER;
+
+END pkg_carwash;
+/
+
+-- ======================================================
+-- PACKAGE BODY
+-- ======================================================
+
+CREATE OR REPLACE PACKAGE BODY pkg_carwash AS
+
+    ------------------------------------------------------
+    -- ADD CUSTOMER
+    ------------------------------------------------------
+    PROCEDURE add_customer(
+        p_first_name IN VARCHAR2,
+        p_last_name  IN VARCHAR2,
+        p_phone      IN VARCHAR2,
+        p_email      IN VARCHAR2,
+        p_address    IN VARCHAR2
+    )
+    AS
+    BEGIN
+        INSERT INTO customer(
+            customer_id,
+            first_name,
+            last_name,
+            phone,
+            email,
+            address
+        )
+        VALUES(
+            seq_customer.NEXTVAL,
+            p_first_name,
+            p_last_name,
+            p_phone,
+            p_email,
+            p_address
+        );
+
+        COMMIT;
+
+        DBMS_OUTPUT.PUT_LINE('Customer added successfully.');
+
+    EXCEPTION
+        WHEN DUP_VAL_ON_INDEX THEN
+            DBMS_OUTPUT.PUT_LINE('Phone number or email already exists.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE(SQLERRM);
+    END;
+
+    ------------------------------------------------------
+    -- UPDATE ORDER STATUS
+    ------------------------------------------------------
+    PROCEDURE update_order_status(
+        p_order_id IN NUMBER,
+        p_status   IN VARCHAR2
+    )
+    AS
+    BEGIN
+        UPDATE service_order
+        SET status = UPPER(p_status)
+        WHERE order_id = p_order_id;
+
+        COMMIT;
+
+        DBMS_OUTPUT.PUT_LINE('Order updated.');
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE(SQLERRM);
+    END;
+
+    ------------------------------------------------------
+    -- CALCULATE ORDER TOTAL
+    ------------------------------------------------------
+    FUNCTION calculate_order_total(
+        p_order_id IN NUMBER
+    )
+    RETURN NUMBER
+    IS
+        v_total NUMBER;
+    BEGIN
+        SELECT NVL(SUM(quantity * unit_price),0)
+        INTO v_total
+        FROM order_detail
+        WHERE order_id = p_order_id;
+
+        RETURN v_total;
+    END;
+
+    ------------------------------------------------------
+    -- CUSTOMER VEHICLE COUNT
+    ------------------------------------------------------
+    FUNCTION customer_vehicle_count(
+        p_customer_id IN NUMBER
+    )
+    RETURN NUMBER
+    IS
+        v_count NUMBER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_count
+        FROM vehicle
+        WHERE customer_id = p_customer_id;
+
+        RETURN v_count;
+    END;
+
+END pkg_carwash;
+/
+
+-- ======================================================
+-- TEST PACKAGE
+-- ======================================================
+
+-- Add a customer
+BEGIN
+    pkg_carwash.add_customer(
+        'Michael',
+        'Jordan',
+        '0788555555',
+        'michael@example.com',
+        'Kigali'
+    );
+END;
+/
+
+-- Update order status
+BEGIN
+    pkg_carwash.update_order_status(
+        1,
+        'PAID'
+    );
+END;
+/
+
+-- Calculate order total
+SELECT pkg_carwash.calculate_order_total(1) AS total_amount
+FROM dual;
+
+-- Count customer vehicles
+SELECT pkg_carwash.customer_vehicle_count(1) AS total_vehicles
+FROM dual;
