@@ -1,0 +1,205 @@
+/*==========================================================
+ Project : Car Wash Management System (CWMS)
+ Course  : Oracle Database Programming Capstone
+ Student : MASSAQUOI WILLIAMS
+ Reg No. : 30489/2025
+ File    : 01_Stored_Procedures.sql
+==========================================================*/
+
+-- ======================================================
+-- PROCEDURE 1: ADD NEW CUSTOMER
+-- ======================================================
+
+CREATE OR REPLACE PROCEDURE add_customer (
+    p_first_name IN VARCHAR2,
+    p_last_name  IN VARCHAR2,
+    p_phone      IN VARCHAR2,
+    p_email      IN VARCHAR2,
+    p_address    IN VARCHAR2
+)
+AS
+BEGIN
+    INSERT INTO customer (
+        customer_id,
+        first_name,
+        last_name,
+        phone,
+        email,
+        address
+    )
+    VALUES (
+        seq_customer.NEXTVAL,
+        p_first_name,
+        p_last_name,
+        p_phone,
+        p_email,
+        p_address
+    );
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Customer added successfully.');
+END;
+/
+
+-- ======================================================
+-- PROCEDURE 2: ADD NEW SERVICE
+-- ======================================================
+
+CREATE OR REPLACE PROCEDURE add_service (
+    p_service_name IN VARCHAR2,
+    p_price        IN NUMBER
+)
+AS
+BEGIN
+    INSERT INTO service (
+        service_id,
+        service_name,
+        price
+    )
+    VALUES (
+        seq_service.NEXTVAL,
+        p_service_name,
+        p_price
+    );
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Service added successfully.');
+END;
+/
+
+-- ======================================================
+-- PROCEDURE 3: CREATE SERVICE ORDER
+-- ======================================================
+
+CREATE OR REPLACE PROCEDURE create_service_order (
+    p_customer_id IN NUMBER,
+    p_vehicle_id  IN NUMBER,
+    p_employee_id IN NUMBER
+)
+AS
+BEGIN
+    INSERT INTO service_order (
+        order_id,
+        customer_id,
+        vehicle_id,
+        employee_id,
+        order_date,
+        status
+    )
+    VALUES (
+        seq_service_order.NEXTVAL,
+        p_customer_id,
+        p_vehicle_id,
+        p_employee_id,
+        SYSDATE,
+        'PENDING'
+    );
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Service order created successfully.');
+END;
+/
+
+-- ======================================================
+-- PROCEDURE 4: UPDATE ORDER STATUS
+-- ======================================================
+
+CREATE OR REPLACE PROCEDURE update_order_status (
+    p_order_id IN NUMBER,
+    p_status   IN VARCHAR2
+)
+AS
+BEGIN
+    UPDATE service_order
+    SET status = UPPER(p_status)
+    WHERE order_id = p_order_id;
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Order status updated.');
+END;
+/
+
+-- ======================================================
+-- PROCEDURE 5: RECORD PAYMENT
+-- ======================================================
+
+CREATE OR REPLACE PROCEDURE record_payment (
+    p_order_id       IN NUMBER,
+    p_amount         IN NUMBER,
+    p_payment_method IN VARCHAR2
+)
+AS
+BEGIN
+    INSERT INTO payment (
+        payment_id,
+        order_id,
+        payment_date,
+        amount,
+        payment_method
+    )
+    VALUES (
+        seq_payment.NEXTVAL,
+        p_order_id,
+        SYSDATE,
+        p_amount,
+        p_payment_method
+    );
+
+    COMMIT;
+
+    DBMS_OUTPUT.PUT_LINE('Payment recorded successfully.');
+END;
+/
+
+-- ======================================================
+-- SAMPLE EXECUTION
+-- ======================================================
+
+BEGIN
+    add_customer(
+        'Alice',
+        'Johnson',
+        '0788999999',
+        'alice@example.com',
+        'Kigali'
+    );
+END;
+/
+
+BEGIN
+    add_service(
+        'Full Car Detailing',
+        50
+    );
+END;
+/
+
+BEGIN
+    create_service_order(
+        1,
+        1,
+        1
+    );
+END;
+/
+
+BEGIN
+    update_order_status(
+        1,
+        'COMPLETED'
+    );
+END;
+/
+
+BEGIN
+    record_payment(
+        1,
+        50,
+        'Cash'
+    );
+END;
+/
